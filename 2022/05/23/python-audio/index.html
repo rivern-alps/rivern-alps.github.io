@@ -1,0 +1,311 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>python_audio | Rivern</title><meta name="keywords" content="python"><meta name="author" content="Rivern Yuan"><meta name="copyright" content="Rivern Yuan"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="python对音频文件处理简介由于quecpython usr目录下放置文件时，是按照block来，一个block为4K,当文件过多时，会造成资源浪费。而且当文件过多过大时，下载时间长且容易造成文件下载失败，影响客户实际功能。故定义该方案，多文件时，按照一定规则将该文件合并为一个文件，以节省资源。 背景为配合模组端音频文件合并拼接的方案，需要一个上位机工具，可以自动化实现音频文件的生成、内容裁剪、">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python_audio">
+<meta property="og:url" content="http://rivern.icu/2022/05/23/python-audio/index.html">
+<meta property="og:site_name" content="Rivern">
+<meta property="og:description" content="python对音频文件处理简介由于quecpython usr目录下放置文件时，是按照block来，一个block为4K,当文件过多时，会造成资源浪费。而且当文件过多过大时，下载时间长且容易造成文件下载失败，影响客户实际功能。故定义该方案，多文件时，按照一定规则将该文件合并为一个文件，以节省资源。 背景为配合模组端音频文件合并拼接的方案，需要一个上位机工具，可以自动化实现音频文件的生成、内容裁剪、">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+<meta property="article:published_time" content="2022-05-23T02:53:22.000Z">
+<meta property="article:modified_time" content="2023-09-06T08:12:51.219Z">
+<meta property="article:author" content="Rivern Yuan">
+<meta property="article:tag" content="python">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://rivern.icu/2022/05/23/python-audio/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'python_audio',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-09-06 16:12:51'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.1.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/rivern-alps/pic@master/hexo/avator.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">16</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">13</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Rivern</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">python_audio</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-05-23T02:53:22.000Z" title="发表于 2022-05-23 10:53:22">2022-05-23</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-09-06T08:12:51.219Z" title="更新于 2023-09-06 16:12:51">2023-09-06</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="python_audio"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="python对音频文件处理"><a href="#python对音频文件处理" class="headerlink" title="python对音频文件处理"></a>python对音频文件处理</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>由于quecpython usr目录下放置文件时，是按照block来，一个block为4K,当文件过多时，会造成资源浪费。而且当文件过多过大时，下载时间长且容易造成文件下载失败，影响客户实际功能。故定义该方案，多文件时，按照一定规则将该文件合并为一个文件，以节省资源。</p>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>为配合模组端音频文件合并拼接的方案，需要一个上位机工具，可以自动化实现音频文件的生成、内容裁剪、拼接，最后拼接后的文件可以通过模组端的接口来播放。</p>
+<h2 id="拼接方案"><a href="#拼接方案" class="headerlink" title="拼接方案"></a>拼接方案</h2><p>在上位机上按照如下设定格式，对文件进行拼接。格式如下：</p>
+<table>
+<thead>
+<tr>
+<th>标识（8b）</th>
+<th>文件个数（4b）</th>
+<th>第一个文件名（128b）</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>第一个文件偏移量(4b)</td>
+<td>第一个文件大小（4b）</td>
+<td>……</td>
+<td>第n个文件名（128b）</td>
+</tr>
+<tr>
+<td>第n个文件偏移量(4b)</td>
+<td>第n个文件大小（4b）</td>
+<td>第一个文件完整数据（大小取决于第一个文件的大小）</td>
+<td></td>
+</tr>
+<tr>
+<td>……</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>第n个文件完整数据（大小取决于第n个文件的大小）</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>数据</th>
+<th>大小</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>文件识别标识</td>
+<td>8byte(固定”montage”)</td>
+<td>用于识别该文件为拼接文件</td>
+</tr>
+<tr>
+<td>包含的文件数</td>
+<td>4byte</td>
+<td>该拼接文件是由多少个文件拼接的</td>
+</tr>
+<tr>
+<td>第一个文件的数据信息</td>
+<td>128byte + 4byte + 4byte   (文件名 + 偏移量   + 文件大小)</td>
+<td>文件名128byte,不足补0   偏移量：是基于整个文件的偏移   文件大小：该文件的长度</td>
+</tr>
+<tr>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+</tr>
+<tr>
+<td>第n个文件的数据信息</td>
+<td>128byte + 4byte + 4byte   (文件名 + 偏移量   + 文件大小)</td>
+<td>文件名128byte,不足补0   偏移量：是基于整个文件的偏移   文件大小：该文件的长度</td>
+</tr>
+<tr>
+<td>第一个文件的完整数据</td>
+<td>第一个文件大小</td>
+<td></td>
+</tr>
+<tr>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+</tr>
+<tr>
+<td>第n个文件的完整数据</td>
+<td>第n个文件大小</td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="方案实现"><a href="#方案实现" class="headerlink" title="方案实现"></a>方案实现</h2><p><code>以下实现方案均为python实现</code></p>
+<h3 id="实现音频拼接"><a href="#实现音频拼接" class="headerlink" title="实现音频拼接"></a>实现音频拼接</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># 代码实现逻辑部分</span><br><span class="line">f = open(res, &#x27;wb&#x27;)</span><br><span class="line">	fileheader = bytes(&quot;montage&quot;, &#x27;utf-8&#x27;) + bytes(1) + bytes.fromhex(&#x27;%02X&#x27; % len(file_list)) + bytes(3)</span><br><span class="line">	filebyte, bytesize, filebody = b&#x27;&#x27;, 0, b&#x27;&#x27;</span><br><span class="line">	for i in file_list:</span><br><span class="line">		print(i)</span><br><span class="line">		filename_byte = bytes(text_to_hash(i), &#x27;utf-8&#x27;)</span><br><span class="line">		filebyte += (filename_byte + bytes(128-len(filename_byte)) + bytes.fromhex(&#x27;%08X&#x27; % (len(file_list)*136 + 12 + bytesize))[::-1] + bytes.fromhex(&#x27;%08X&#x27; % os.path.getsize(i))[::-1])</span><br><span class="line">		bytesize += os.path.getsize(i)</span><br><span class="line">		filebody += open(i, &#x27;rb&#x27;).read()</span><br><span class="line">	f.write(fileheader + filebyte + filebody)</span><br><span class="line">	f.close()</span><br></pre></td></tr></table></figure>
+
+<h3 id="音频文件生成"><a href="#音频文件生成" class="headerlink" title="音频文件生成"></a>音频文件生成</h3><p><code>可以通过百度开放平台或讯飞等python SDK实现</code></p>
+<p><a target="_blank" rel="noopener" href="https://ai.baidu.com/ai-doc/SPEECH/zk4nlz99s">SDK使用说明</a></p>
+<p>生成后的音频文件会存在空白的结尾，在播放时会 产生停顿感，所以需要将音频文件尾部空白部分裁剪后再进行拼接，同时由于生成的文件为wav无损格式，在裁剪后需要将文件转换成MP3或amr格式后再进行拼接以减小占用空间。</p>
+<p><strong>实测转换成amr后一个字的语音文件占用空间在900字节左右</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/media/media_wave.png" alt="1653877921614"></p>
+<h3 id="音频文件裁剪"><a href="#音频文件裁剪" class="headerlink" title="音频文件裁剪"></a>音频文件裁剪</h3><p>步骤</p>
+<ol>
+<li>通过python wave库对上一部生成的wav文件进行读取，获取音频的通道、量化位数、采样频率、采样点数</li>
+<li>读取采样点数数据获取波形数据</li>
+<li>通过numpy将波形数据转换成np数组</li>
+<li>对数组数据进行分析将尾部的空数据剔除</li>
+<li>通过采样频率和采样点数获取音频时间，再根据上一步获取的剔除数据位置截取有效的音频段（裁剪音频文件需要pydub库，读取wav数据后可以根据时间戳来剪切指定数据）</li>
+</ol>
+<h3 id="音频文件转换"><a href="#音频文件转换" class="headerlink" title="音频文件转换"></a>音频文件转换</h3><p>通过win上的ffmpeg工具进行音频格式转换</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">命令格式</span></span><br><span class="line">ffmpeg -i wave_path -y amr_path</span><br></pre></td></tr></table></figure>
+
+<p>注意：win上使用ffmpeg工具需要配置环境变量并且重启（不重启的话python无法获取到环境变量）</p>
+<p><code>转换之后使用第一步的拼接步骤即可获得最终的音频包，传入模组中调用播放接口即可播放</code></p>
+<h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><p><a href="D:\pyPro\hexo\rivern-alps\source_posts\media\main.py">代码下载</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://rivern.icu">Rivern Yuan</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://rivern.icu/2022/05/23/python-audio/">http://rivern.icu/2022/05/23/python-audio/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://rivern.icu" target="_blank">Rivern</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/python/">python</a></div><div class="post_share"><div class="social-share" data-image="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/gh/overtrue/share.js@master/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/06/08/ha-config/"><img class="prev-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">ha_config</div></div></a></div><div class="next-post pull-right"><a href="/2022/05/13/docker-homeassistant/"><img class="next-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">docker-homeassistant</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/04/02/python-venv/" title="python venv"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-04-02</div><div class="title">python venv</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div><div id="comment-switch"><span class="first-comment">Valine</span><span class="switch-btn"></span><span class="second-comment">Disqus</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div><div><div id="disqus_thread"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.jsdelivr.net/gh/rivern-alps/pic@master/hexo/avator.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Rivern Yuan</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">16</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">13</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/supremeys"><i class="fab fa-github"></i><span>Rush</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/supremeys" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:rivern.yuan@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a><a class="social-icon" href="tencent://message/?uin=1520483071" target="_blank" title="QQ"><i class="fab fa-qq"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">good luck</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#python%E5%AF%B9%E9%9F%B3%E9%A2%91%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86"><span class="toc-number">1.</span> <span class="toc-text">python对音频文件处理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-number">1.1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF"><span class="toc-number">1.2.</span> <span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8B%BC%E6%8E%A5%E6%96%B9%E6%A1%88"><span class="toc-number">1.3.</span> <span class="toc-text">拼接方案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%A1%88%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.4.</span> <span class="toc-text">方案实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E9%9F%B3%E9%A2%91%E6%8B%BC%E6%8E%A5"><span class="toc-number">1.4.1.</span> <span class="toc-text">实现音频拼接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9F%B3%E9%A2%91%E6%96%87%E4%BB%B6%E7%94%9F%E6%88%90"><span class="toc-number">1.4.2.</span> <span class="toc-text">音频文件生成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9F%B3%E9%A2%91%E6%96%87%E4%BB%B6%E8%A3%81%E5%89%AA"><span class="toc-number">1.4.3.</span> <span class="toc-text">音频文件裁剪</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9F%B3%E9%A2%91%E6%96%87%E4%BB%B6%E8%BD%AC%E6%8D%A2"><span class="toc-number">1.4.4.</span> <span class="toc-text">音频文件转换</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E4%BB%A3%E7%A0%81"><span class="toc-number">1.5.</span> <span class="toc-text">完整代码</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2023/09/30/rivern-alps/" title="rivern-alps"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="rivern-alps"/></a><div class="content"><a class="title" href="/2023/09/30/rivern-alps/" title="rivern-alps">rivern-alps</a><time datetime="2023-09-30T04:08:18.000Z" title="发表于 2023-09-30 12:08:18">2023-09-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/09/01/ha-core-dev/" title="ha_core_dev"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="ha_core_dev"/></a><div class="content"><a class="title" href="/2022/09/01/ha-core-dev/" title="ha_core_dev">ha_core_dev</a><time datetime="2022-09-01T06:56:02.000Z" title="发表于 2022-09-01 14:56:02">2022-09-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/08/17/unraid-study/" title="unraid_study"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="unraid_study"/></a><div class="content"><a class="title" href="/2022/08/17/unraid-study/" title="unraid_study">unraid_study</a><time datetime="2022-08-17T03:48:38.000Z" title="发表于 2022-08-17 11:48:38">2022-08-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/06/08/ha-config/" title="ha_config"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="ha_config"/></a><div class="content"><a class="title" href="/2022/06/08/ha-config/" title="ha_config">ha_config</a><time datetime="2022-06-08T02:08:02.000Z" title="发表于 2022-06-08 10:08:02">2022-06-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/05/23/python-audio/" title="python_audio"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="python_audio"/></a><div class="content"><a class="title" href="/2022/05/23/python-audio/" title="python_audio">python_audio</a><time datetime="2022-05-23T02:53:22.000Z" title="发表于 2022-05-23 10:53:22">2022-05-23</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By Rivern Yuan</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>function loadValine () {
+  function initValine () {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: '',
+      appKey: '',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  if (typeof Valine === 'function') initValine() 
+  else getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js').then(initValine)
+}
+
+if ('Valine' === 'Valine' || !true) {
+  if (true) btf.loadComment(document.getElementById('vcomment'),loadValine)
+  else setTimeout(loadValine, 0)
+} else {
+  function loadOtherComment () {
+    loadValine()
+  }
+}</script><script>function loadDisqus () {
+  var disqus_config = function () {
+    this.page.url = 'http://rivern.icu/2022/05/23/python-audio/'
+    this.page.identifier = '2022/05/23/python-audio/'
+    this.page.title = 'python_audio'
+  };
+
+  window.disqusReset = () => {
+    DISQUS.reset({
+      reload: true,
+      config: disqus_config
+    })
+  }
+
+  if (window.DISQUS) disqusReset()
+  else {
+    (function() { 
+      var d = document, s = d.createElement('script');
+      s.src = 'https://.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  }
+}
+
+if ('Valine' === 'Disqus' || !true) {
+  if (true) btf.loadComment(document.getElementById('disqus_thread'), loadDisqus)
+  else loadDisqus()
+} else {
+  function loadOtherComment () {
+    loadDisqus()
+  }
+}
+</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
